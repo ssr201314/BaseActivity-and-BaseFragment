@@ -1,0 +1,17 @@
+
+import android.content.Context;
+import android.support.annotation.NonNull;
+
+import com.lzy.okgo.model.Response;
+
+import java.util.Objects;
+
+public interface Pview{
+    public void onloadOK( String stringResponse, int requestCode);
+
+    public void onError(Response<String> response, int requestCode);
+
+    public void onFaild(Response<String> response, int requestCode);
+
+    public Context getContext();
+}
