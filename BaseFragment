@@ -1,0 +1,45 @@
+public abstract class BaseFragment extends BottomSheetDialogFragment implements Pview {
+    Logger logger;
+    private static Toast myToast;
+    public DbUtils dbUtils;
+    public HttpUtils httpUtils;
+    public Map<String, String> map;
+    public User user;
+    public JsonUtils jsonUtils;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logger =Logger.getLogger(this.getClass());
+        logger.info(this.getClass().getName());
+        dbUtils = DbUtils.getInstance();
+        httpUtils = HttpUtils.getInstance(getActivity());
+        jsonUtils=new JsonUtils();
+        user = LitePal.findFirst(User.class);
+        map = new HashMap<>();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        map.clear();
+        httpUtils.CancelF();
+    }
+
+    protected void HideKeyboard() {
+        /**
+         * 不弹出系统键盘
+         */
+        int flag = WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
+        getActivity().getWindow().addFlags(flag);
+    }
+    protected   void ShowToast(String text) {
+        if (myToast != null) {
+            myToast.cancel();
+            myToast = Toast.makeText(getActivity().getApplicationContext(), text, Toast.LENGTH_SHORT);
+        } else {
+            myToast = Toast.makeText(getActivity().getApplicationContext(), text, Toast.LENGTH_SHORT);
+        }
+        myToast.show();
+    }
+
+
