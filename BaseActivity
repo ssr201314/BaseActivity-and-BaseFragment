@@ -1,0 +1,59 @@
+public abstract class BaseActivity extends AppCompatActivity implements Pview {
+    public Logger logger;
+    private static Toast myToast;
+    public ImmersionBar mImmersionBar;
+    TextView tv_right;
+    public DbUtils dbUtils;
+    public HttpUtils httpUtils;
+    public Map<String, String> map;
+    public User user;
+    public JsonUtils jsonUtils;
+    protected Unbinder bind;
+    TextView tv_back;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logger = Logger.getLogger(this.getClass());
+        logger.info(this.getClass().getName());
+        dbUtils = DbUtils.getInstance();
+        httpUtils = HttpUtils.getInstance(this);
+        jsonUtils=new JsonUtils();
+        user = LitePal.findFirst(User.class);
+        map = new HashMap<>();
+        mImmersionBar = ImmersionBar.with(this);
+      //  mImmersionBar.statusBarColor("#101013");
+        //隐藏标题
+        getSupportActionBar().hide();
+        firstHideKeyboard();
+        //取消状态栏
+      /*  getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);*/
+        //强制竖屏
+        //  setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        App.getInstance().addActivity(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        map.clear();
+        httpUtils.Cancel();
+        if (bind!=null){
+            bind.unbind();
+        }
+        hideInput();
+    }
+
+
+
+    /**
+     * 隐藏键盘
+     */
+    protected void hideInput() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        View v = getWindow().peekDecorView();
+        if (null != v) {
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
+    }
+
