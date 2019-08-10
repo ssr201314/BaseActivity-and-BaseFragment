@@ -1,0 +1,90 @@
+public class HttpUtils {
+    static Logger logger = Logger.getLogger(HttpUtils.class);
+    static Pview pview;
+    Context mContext;
+    Fragment fragment;
+    public static HttpUtils getInstance(Context context) {
+        return new HttpUtils();
+    }
+
+    public HttpUtils(Context context) {
+    }
+
+    public HttpUtils() {
+    }
+
+    public void Post(final Context context, String uri, Map<String, String> map, final int RequestCode) {
+        pview = (Pview) context;
+        mContext = context;
+        HttpParams httpParams = new HttpParams();
+        httpParams.put(map);
+        OkGo.<String>post(uri)
+                .tag(context)
+                .params(httpParams)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        if (!TextUtils.isEmpty(response.body())) {
+                            pview.onloadOK(response.body(), RequestCode);
+                        }
+                        logger.info("服务端响应" + context.getClass().getName() + ":" + response.body());
+                    }
+
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+                        pview.onError(response, RequestCode);
+                    }
+
+                    @Override
+                    public void onStart(Request<String, ? extends Request> request) {
+                        super.onStart(request);
+                    }
+                });
+    }
+
+    public void Post(final Fragment fragment, String uri, Map<String, String> map, final int RequestCode) {
+        pview = (Pview) fragment;
+        this.fragment = fragment;
+        HttpParams httpParams = new HttpParams();
+        httpParams.put(map);
+        OkGo.<String>post(uri)
+                .tag(fragment)
+                .params(httpParams)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        if (!TextUtils.isEmpty(response.body())) {
+                            pview.onloadOK(response.body(), RequestCode);
+                        }
+                        logger.info("服务端响应" + fragment.getClass().getName() + ":" + response.body());
+                    }
+
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+                        pview.onError(response, RequestCode);
+                    }
+
+                    @Override
+                    public void onStart(Request<String, ? extends Request> request) {
+                        super.onStart(request);
+                    }
+                });
+    }
+
+    //取消单个请求
+    public void Cancel() {
+        OkGo.getInstance().cancelTag( mContext);
+    }
+    //取消单个请求
+    public void CancelF() {
+        OkGo.getInstance().cancelTag( fragment);
+    }
+
+    //取消所有请求
+    public void CancelAll() {
+        OkGo.getInstance().cancelAll();
+    }
+
+}
