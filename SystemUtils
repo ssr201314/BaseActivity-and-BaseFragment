@@ -1,0 +1,316 @@
+public class SystemUtils {
+    private static Calendar c;
+
+
+    /**
+     * 根据时间字符串返回日历
+     *
+     * @param timestr 时间字符串(yyyy-MM-dd)
+     * @return
+     */
+    public static Calendar getCalendarByTimeStr(String timestr) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        ParsePosition pos = new ParsePosition(0);
+        Date strtodate = formatter.parse(timestr, pos);
+        //获取默认选中的日期的年月日星期的值，并赋值
+        Calendar calendar = Calendar.getInstance();//日历对象
+        calendar.setTime(strtodate);//设置当前日期
+        return calendar;
+    }
+
+    /**
+     * 根据时间字符串返回日历
+     *
+     * @param timestr 时间字符串(HH:mm)
+     * @return
+     */
+    public static Calendar getCalendarByTimeHMStr(String timestr) {
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+        ParsePosition pos = new ParsePosition(0);
+        Date strtodate = formatter.parse(timestr, pos);
+        //获取默认选中的日期的年月日星期的值，并赋值
+        Calendar calendar = Calendar.getInstance();//日历对象
+        calendar.setTime(strtodate);//设置当前日期
+        return calendar;
+    }
+
+    /**
+     * 返回年月日时分秒
+     *
+     * @return
+     */
+    public static String getYMDHMS() {
+        Date t = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        // System.out.println(df.format(t));
+        return df.format(t);
+    }
+
+    /**
+     * 返回时分
+     *
+     * @return
+     */
+    public static String getHourAndMillis() {
+        c = Calendar.getInstance();
+        return c.get(Calendar.HOUR_OF_DAY) + ":" + (c.get(Calendar.MINUTE) < 10 ? ("0" + c.get(Calendar.MINUTE)) : c.get(Calendar.MINUTE));
+    }
+
+    /**
+     * 返回年月日
+     *
+     * @return
+     */
+    public static String getYMD() {
+        c = Calendar.getInstance();
+        return c.get(Calendar.YEAR) + "-" + (c.get(Calendar.MONTH) + 1) + "-" + c.get(Calendar.DAY_OF_MONTH);
+    }
+    /**
+     * 返回当前时间七天前的日期
+     *
+     * @return
+     */
+    public static String getYMD_week(){
+        c = Calendar.getInstance();
+        //过去七天
+        c.setTime(new Date());
+        c.add(Calendar.DATE, - 7);
+        return c.get(Calendar.YEAR) + "-" + (c.get(Calendar.MONTH) + 1) + "-" + c.get(Calendar.DAY_OF_MONTH);
+    }
+    /**
+     * 返回昨天的日期
+     *
+     * @return
+     */
+    public static String getYMD_day(){
+        c = Calendar.getInstance();
+        //过去七天
+        c.setTime(new Date());
+        c.add(Calendar.DATE, - 1);
+        return c.get(Calendar.YEAR) + "-" + (c.get(Calendar.MONTH) + 1) + "-" + c.get(Calendar.DAY_OF_MONTH);
+    }
+
+    /**
+     * 返回星期
+     *
+     * @return
+     */
+    public static String getWeek(Context context) {
+        c = Calendar.getInstance();
+        int i = c.get(Calendar.DAY_OF_WEEK);
+        switch (i) {
+ /*           case 1:
+                return context.getString(R.string.sun);
+            case 2:
+                return context.getString(R.string.mon);
+            case 3:
+                return context.getString(R.string.tues);
+            case 4:
+                return context.getString(R.string.wed);
+            case 5:
+                return context.getString(R.string.thur);
+            case 6:
+                return context.getString(R.string.fri);
+            case 7:
+                return context.getString(R.string.sat);*/
+            default:
+                return "";
+        }
+    }
+
+
+    /**
+     * 设备信息
+     *
+     * @param context
+     * @param key
+     * @param value
+     */
+    public void SetPreferences(Context context, String key, String value) {
+        SharedPreferences preferences = context.getSharedPreferences("DviceInfo", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(key, value);
+        editor.commit();
+    }
+
+    public String GetPreferences(Context context, String key) {
+        SharedPreferences preferences = context.getSharedPreferences("DviceInfo", Context.MODE_PRIVATE);
+        return preferences.getString(key, "");
+
+    }
+
+    /**
+     * 根据年月日时分秒随机数生成一个订单号
+     *
+     * @return
+     */
+    public static String getYMDHMSR() {
+        Date t = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+        // System.out.println(df.format(t));
+        return df.format(t) + (int) (Math.random() * 100);
+    }
+
+    /**
+     * 给定一个日期增加其天数
+     *
+     * @param timestr 需要增加小时的日期（yyyy-MM-dd HH:mm:ss）
+     * @param sum     需要增加的小时(12,24,36,72......)
+     * @return
+     */
+    public static String AddTime(String timestr, int sum) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        ParsePosition pos = new ParsePosition(0);
+        Date strtodate = formatter.parse(timestr, pos);
+        //获取默认选中的日期的年月日星期的值，并赋值
+        Calendar calendar = Calendar.getInstance();//日历对象
+        calendar.setTime(strtodate);//设置当前日期
+        // calendar.add(Calendar.DAY_OF_MONTH, sum);
+        calendar.add(Calendar.HOUR_OF_DAY, sum);
+        Date time = calendar.getTime();
+        return formatter.format(time);
+    }
+
+    /**
+     * 是否超期
+     */
+    public static boolean GetCompareTime(String timestr) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//年-月-日 时-分
+        try {
+            Date date1 = dateFormat.parse(timestr);//给定的时间
+            Date date2 = dateFormat.parse(getYMDHMS());//当前系统时间
+            if (date2.getTime() < date1.getTime()) {
+                return false;
+            } else {
+                return true;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    /**
+     * 是否是一个从小到大的时间范围
+     *
+     * @param timestart 开始时间 HH:mm
+     * @param timeend   结束时间 HH:mm
+     */
+    public static boolean GetCompareTime(String timestart, String timeend) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");//年-月-日 时-分
+        try {
+            Date date1 = dateFormat.parse(timestart);//
+            Date date2 = dateFormat.parse(timeend);//
+            if (date1.getTime() < date2.getTime()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    /**
+     * 是否是一个从小到大的时间范围
+     *
+     * @param timestart 开始时间 yyyy-MM-dd HH:mm:ss
+     * @param timeend   结束时间 yyyy-MM-dd HH:mm:ss
+     */
+    public static boolean GetCompareTimeYMDHMS(String timestart, String timeend) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//年-月-日 时-分
+        try {
+            Date date1 = dateFormat.parse(timestart);//
+            Date date2 = dateFormat.parse(timeend);//
+            if (date1.getTime() < date2.getTime()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+    /**
+     * 是否是一个从小到大的时间范围
+     *
+     * @param timestart 开始时间 yyyy-MM-dd
+     * @param timeend   结束时间 yyyy-MM-dd
+     */
+    public static boolean InTimeRange(String timestart,String time, String timeend) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");//年-月-日
+        try {
+            Date date1 = dateFormat.parse(timestart);//
+            Date date2 = dateFormat.parse(timeend);//
+            Date date3 = dateFormat.parse(time);//
+            if (date3.getTime() <= date2.getTime()&&date3.getTime() >= date1.getTime()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    /**
+     * 是否在一个时间范围内
+     *
+     * @param timestart 开始时间
+     * @param time      需要判断的时间
+     * @param timeend   结束时间
+     */
+    public static boolean AtTimeRange(String timestart, String time, String timeend) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//年-月-日 时-分
+        try {
+            Date date1 = dateFormat.parse(timestart);//
+            Date date = dateFormat.parse(time);//
+            Date date2 = dateFormat.parse(timeend);//
+            if (date1.getTime() <= date.getTime() && date.getTime() <= date2.getTime()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    /**
+     * 开启一个定时任务
+     */
+    public static void startTask(Context context, Class<?> cls, String starTime, String endTime) {
+/*        DateFormat df = new SimpleDateFormat("HH:mm");
+
+            Date d1 = df.parse(starTime);
+            Date d2 = df.parse(endTime);
+            long diff = d1.getTime() - d2.getTime();//这样得到的差值是微秒级别*/
+        Intent intent = new Intent(context.getApplicationContext(), cls);
+        PendingIntent pi = PendingIntent.getBroadcast(context.getApplicationContext(), 0, intent, 0);
+        //得到AlarmManager实例
+        AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+        am.setRepeating(AlarmManager.RTC_WAKEUP, getCalendarByTimeHMStr(starTime).getTimeInMillis(), 24 * 60 * 60 * 1000, pi);
+    }
+
+    /**
+     * 生成六位取件码
+     */
+    public static String getSixCode() {
+        String sources = "0123456789";
+        Random rand = new Random();
+        StringBuffer flag = new StringBuffer();
+        for (int j = 0; j < 6; j++) {
+            flag.append(sources.charAt(rand.nextInt(9)) + "");
+        }
+        System.out.println(flag.toString());
+        return flag.toString();
+    }
